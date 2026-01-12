@@ -1,29 +1,52 @@
-import type { PluginCreateOptions, PublisherPlugin } from 'reg-suit-interface'
+import type {
+  PluginCreateOptions,
+  PluginLogger,
+  PublisherPlugin,
+} from 'reg-suit-interface'
+import { getRepoInfo } from './git-util'
 
 interface PluginConfig {
-  reportUrl?: string
+  outDir?: string
+  includeCommitHash?: boolean
 }
 
 export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
-  private reportUrl = ''
+  private logger!: PluginLogger
+  private outDir = ''
+  private includeCommitHash = false
 
   init(config: PluginCreateOptions<PluginConfig>) {
-    this.reportUrl = config.options.reportUrl ?? ''
+    this.logger = config.logger
+    this.outDir = config.options.outDir ?? ''
+    this.includeCommitHash = config.options.includeCommitHash ?? false
   }
 
-  publish() {
-    if (!this.reportUrl) {
-      console.warn(
-        'reg-publish-gh-pages-plugin: reportUrl is not set. reportUrl will be empty.',
+  publish(key: string) {
+    const info = getRepoInfo()
+
+    if (!info) {
+      this.logger.warn(
+        'Unable to determine repository info. Make sure to run this in a GitHub repository or set GITHUB_REPOSITORY environment variable.',
       )
+      return Promise.resolve({ reportUrl: undefined })
     }
 
-    return Promise.resolve({ reportUrl: this.reportUrl })
+    const pathParts = [
+      info.repo,
+      this.outDir,
+      this.includeCommitHash ? key : '',
+    ]
+      .filter(Boolean)
+      .join('/')
+
+    const reportUrl = `https://${info.owner}.github.io/${pathParts}/`
+
+    return Promise.resolve({ reportUrl })
   }
 
   fetch() {
-    console.log(
-      'reg-publish-gh-pages-plugin: This plugin is for `reg-suit publish` only. fetch() is not implemented.',
+    this.logger.warn(
+      'This plugin is for `reg-suit publish` only. fetch() is not implemented.',
     )
     return Promise.resolve()
   }
