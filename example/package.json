@@ -1,0 +1,19 @@
+{
+  "name": "example",
+  "version": "0.0.0",
+  "private": true,
+  "type": "module",
+  "scripts": {
+    "setup:playwright": "playwright install chromium",
+    "screenshot": "jiti scripts/screenshot.ts"
+  },
+  "devDependencies": {
+    "jiti": "^2.6.1",
+    "playwright": "^1.57.0",
+    "reg-keygen-git-hash-plugin": "^0.14.5",
+    "reg-notify-github-plugin": "^0.14.5",
+    "reg-publish-gh-pages-plugin": "../",
+    "reg-suit": "^0.14.5",
+    "vite": "^7.3.1"
+  }
+}

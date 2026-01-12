@@ -1,0 +1,26 @@
+name: Save VRT Cache
+
+on:
+  push:
+    branches:
+      - main
+
+jobs:
+  save-cache:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+
+      - name: Copy example files
+        run: mkdir -p example/.reg && cp -r example/expected example/.reg
+
+      - name: Get commit hash
+        id: get-hash
+        run: echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
+
+      - name: Save snapshots cache
+        uses: actions/cache/save@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        with:
+          path: example/.reg/
+          key: reg-${{ steps.get-hash.outputs.hash }}

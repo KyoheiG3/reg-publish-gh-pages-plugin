@@ -1,0 +1,40 @@
+{
+  "name": "reg-publish-gh-pages-plugin",
+  "version": "0.0.1",
+  "description": "",
+  "main": "./lib/index.js",
+  "types": "./lib/index.d.ts",
+  "files": [
+    "lib"
+  ],
+  "sideEffects": false,
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/KyoheiG3/reg-publish-gh-pages-plugin.git"
+  },
+  "homepage": "https://github.com/KyoheiG3/reg-publish-gh-pages-plugin",
+  "bugs": {
+    "url": "https://github.com/KyoheiG3/reg-publish-gh-pages-plugin/issues"
+  },
+  "keywords": [
+    "reg",
+    "reg-suit-plugin"
+  ],
+  "author": "KyoheiG3",
+  "license": "MIT",
+  "packageManager": "pnpm@10.26.0",
+  "scripts": {
+    "build": "tsc -p tsconfig.build.json",
+    "lint": "eslint .",
+    "format": "dprint fmt",
+    "prepublishOnly": "pnpm build"
+  },
+  "devDependencies": {
+    "@types/node": "25.0.5",
+    "dprint": "0.51.1",
+    "eslint": "9.39.2",
+    "reg-suit-interface": "0.14.2",
+    "typescript": "5.9.3",
+    "typescript-eslint": "8.52.0"
+  }
+}
