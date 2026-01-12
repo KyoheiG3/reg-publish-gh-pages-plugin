@@ -29,13 +29,13 @@ jobs:
         run: cd example && pnpm install --frozen-lockfile
 
       - name: Copy example files
-        run: mkdir -p .reg && cp -r expected .reg
+        run: mkdir -p example/.reg && cp -r example/expected example/.reg
 
       # https://github.com/reg-viz/reg-suit#workaround-for-detached-head
       - name: Workaround for detached HEAD
         run: git checkout ${{github.head_ref}} && git pull
 
       - name: Run reg-suit
-        run: pnpm reg-suit run
+        run: cd example && pnpm reg-suit run
         env:
           REG_NOTIFY_CLIENT_ID: ${{ secrets.REG_NOTIFY_CLIENT_ID }}
