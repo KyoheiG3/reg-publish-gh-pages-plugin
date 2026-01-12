@@ -1,0 +1,21 @@
+{
+  "core": {
+    "workingDir": ".reg",
+    "actualDir": "__screenshots__",
+    "addIgnore": true,
+    "thresholdRate": 0.001,
+    "ximgdiff": {
+      "invocationType": "client"
+    }
+  },
+  "plugins": {
+    "reg-keygen-git-hash-plugin": true,
+    "reg-publish-gh-pages-plugin": {
+      "outDir": "pr/vrt",
+      "includeCommitHash": true
+    },
+    "reg-notify-github-plugin": {
+      "clientId": "$REG_NOTIFY_CLIENT_ID"
+    }
+  }
+}

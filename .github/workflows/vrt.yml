@@ -1,0 +1,41 @@
+name: VRT
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+on:
+  pull_request:
+
+jobs:
+  vrt:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          fetch-depth: 0
+
+      - name: Setup
+        uses: pnpm/action-setup@41ff72655975bd51cab0327fa583b6e92b6d3061 # v4.2.0
+
+      - name: Install dependencies
+        run: pnpm install --frozen-lockfile
+
+      - name: Build
+        run: pnpm build
+
+      - name: Install example dependencies
+        run: cd example && pnpm install --frozen-lockfile
+
+      - name: Copy example files
+        run: mkdir -p .reg && cp -r expected .reg
+
+      # https://github.com/reg-viz/reg-suit#workaround-for-detached-head
+      - name: Workaround for detached HEAD
+        run: git checkout ${{github.head_ref}} && git pull
+
+      - name: Run reg-suit
+        run: pnpm reg-suit run
+        env:
+          REG_NOTIFY_CLIENT_ID: ${{ secrets.REG_NOTIFY_CLIENT_ID }}
