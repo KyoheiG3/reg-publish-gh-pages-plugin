@@ -27,14 +27,18 @@
     "build": "tsc -p tsconfig.build.json",
     "lint": "eslint .",
     "format": "dprint fmt",
+    "test": "vitest run",
+    "test:coverage": "vitest run --coverage",
     "prepublishOnly": "pnpm build"
   },
   "devDependencies": {
-    "@types/node": "25.0.5",
-    "dprint": "0.51.1",
-    "eslint": "9.39.2",
-    "reg-suit-interface": "0.14.2",
-    "typescript": "5.9.3",
-    "typescript-eslint": "8.52.0"
+    "@types/node": "^25.0.5",
+    "@vitest/coverage-v8": "^4.0.17",
+    "dprint": "^0.51.1",
+    "eslint": "^9.39.2",
+    "reg-suit-interface": "^0.14.2",
+    "typescript": "^5.9.3",
+    "typescript-eslint": "^8.52.0",
+    "vitest": "^4.0.17"
   }
 }
