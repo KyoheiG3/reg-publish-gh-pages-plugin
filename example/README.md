@@ -25,7 +25,7 @@ pnpm screenshot
 
 1. Restores base branch snapshots from cache
 2. Runs `reg-suit run` for comparison
-3. Deploys results to `gh-pages` branch at `pr/{PR number}/vrt/`
+3. Deploys results to `gh-pages` branch at `pr/{PR number}/{commit-hash}/`
 
 The output path is configured via `VRT_OUTPUT_DIR` environment variable in regconfig.json.
 
