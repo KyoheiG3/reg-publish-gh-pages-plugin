@@ -2,22 +2,35 @@ import type {
   PluginCreateOptions,
   PluginLogger,
   PublisherPlugin,
+  WorkingDirectoryInfo,
 } from 'reg-suit-interface'
+import { deployToGitHubPages } from './git-deploy'
 import { getRepoInfo } from './git-util'
 
 interface PluginConfig {
+  branch?: string
   outDir?: string
+  sourceDir?: string
+  commitMessage?: string
   includeCommitHash?: boolean
 }
 
 export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
   private logger!: PluginLogger
-  private outDir = ''
-  private includeCommitHash = false
+  private workingDirs!: WorkingDirectoryInfo
+  private branch?: string
+  private outDir!: string
+  private sourceDir?: string
+  private commitMessage?: string
+  private includeCommitHash!: boolean
 
   init(config: PluginCreateOptions<PluginConfig>) {
     this.logger = config.logger
+    this.workingDirs = config.workingDirs
+    this.branch = config.options.branch
     this.outDir = config.options.outDir ?? ''
+    this.sourceDir = config.options.sourceDir
+    this.commitMessage = config.options.commitMessage
     this.includeCommitHash = config.options.includeCommitHash ?? false
   }
 
@@ -31,15 +44,29 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
       return Promise.resolve({ reportUrl: undefined })
     }
 
-    const pathParts = [
-      info.repo,
+    const targetDir = [
       this.outDir,
       this.includeCommitHash ? key : '',
     ]
       .filter(Boolean)
       .join('/')
 
-    const reportUrl = `https://${info.owner}.github.io/${pathParts}/`
+    if (this.branch) {
+      if (targetDir) {
+        deployToGitHubPages({
+          branch: this.branch,
+          sourceDir: this.sourceDir ?? this.workingDirs.base,
+          targetDir,
+          commitMessage: this.commitMessage ?? `deploy: ${key}`,
+        })
+      } else {
+        this.logger.warn(
+          'Deployment skipped. Set outDir option or enable includeCommitHash.',
+        )
+      }
+    }
+
+    const reportUrl = `https://${info.owner}.github.io/${info.repo}/${targetDir}/`
 
     return Promise.resolve({ reportUrl })
   }
