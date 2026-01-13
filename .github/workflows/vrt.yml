@@ -51,4 +51,5 @@ jobs:
       - name: Run reg-suit
         run: cd example && pnpm reg-suit run
         env:
+          VRT_OUTPUT_DIR: pr/${{ github.event.pull_request.number }}/vrt
           REG_NOTIFY_CLIENT_ID: ${{ secrets.REG_NOTIFY_CLIENT_ID }}
