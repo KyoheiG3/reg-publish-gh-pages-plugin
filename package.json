@@ -1,7 +1,7 @@
 {
   "name": "reg-publish-gh-pages-plugin",
   "version": "0.0.1",
-  "description": "",
+  "description": "A reg-suit publisher plugin to deploy visual regression test reports to GitHub Pages",
   "main": "./lib/index.js",
   "types": "./lib/index.d.ts",
   "files": [
@@ -18,7 +18,11 @@
   },
   "keywords": [
     "reg",
-    "reg-suit-plugin"
+    "reg-suit",
+    "reg-suit-plugin",
+    "visual-regression",
+    "vrt",
+    "github-pages"
   ],
   "author": "KyoheiG3",
   "license": "MIT",
