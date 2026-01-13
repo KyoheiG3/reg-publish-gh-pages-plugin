@@ -26,8 +26,9 @@ function escapeDoubleQuotes(str: string): string {
 
 function branchExists(branch: string): boolean {
   try {
-    exec(`git rev-parse --verify origin/${branch}`)
-    return true
+    // Check if branch exists on remote without fetching
+    const result = exec(`git ls-remote --heads origin ${branch}`)
+    return result.length > 0
   } catch {
     return false
   }
@@ -51,6 +52,8 @@ export function deployToGitHubPages(options: DeployOptions): void {
     }
 
     if (branchExists(branch)) {
+      // Fetch the branch to ensure we have the latest refs
+      exec(`git fetch origin ${branch}`)
       // Add worktree for existing branch
       exec(`git worktree add ${worktreeDir} origin/${branch}`)
       exec(`git checkout -B ${branch}`, worktreeDir)
