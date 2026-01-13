@@ -72,9 +72,8 @@ function setupExecSyncMock(config: ExecConfig = {}) {
 
   mockExecSync.mockImplementation((command) => {
     const cmd = String(command)
-    if (cmd.includes('git rev-parse --verify origin/')) {
-      if (branchExists) return 'abc123'
-      throw new Error('branch not found')
+    if (cmd.includes('git ls-remote --heads origin')) {
+      return branchExists ? 'abc123\trefs/heads/gh-pages' : ''
     }
     if (cmd.includes('git diff --cached --quiet')) {
       if (hasChanges) throw new Error('has changes')
@@ -141,11 +140,46 @@ describe('deployToGitHubPages', () => {
         deployToGitHubPages(createDefaultOptions())
 
         expect(mockExecSync).toHaveBeenCalledWith(
+          'git fetch origin gh-pages',
+          expect.any(Object),
+        )
+        expect(mockExecSync).toHaveBeenCalledWith(
           'git worktree add .gh-pages-worktree origin/gh-pages',
           expect.any(Object),
         )
         expect(mockExecSync).toHaveBeenCalledWith(
           'git checkout -B gh-pages',
+          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+        )
+      })
+    })
+  })
+
+  describe('Given git ls-remote command fails', () => {
+    beforeEach(() => {
+      setupExistsSyncMock()
+      mockExecSync.mockImplementation((command) => {
+        const cmd = String(command)
+        if (cmd.includes('git ls-remote --heads origin')) {
+          throw new Error('network error')
+        }
+        if (cmd.includes('git diff --cached --quiet')) {
+          throw new Error('has changes')
+        }
+        return ''
+      })
+    })
+
+    describe('When deployToGitHubPages is called', () => {
+      it('Then it should treat as branch not existing and create orphan branch', () => {
+        deployToGitHubPages(createDefaultOptions())
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+          'git worktree add --detach .gh-pages-worktree',
+          expect.any(Object),
+        )
+        expect(mockExecSync).toHaveBeenCalledWith(
+          'git checkout --orphan gh-pages',
           expect.objectContaining({ cwd: '.gh-pages-worktree' }),
         )
       })
