@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.0
+
+### Features
+
+- Add `reportPath` option for custom report URL configuration
+  - If starts with `http`, used as full URL
+  - Otherwise, used as path segment in the generated URL
+
 ## v0.1.0
 
 Initial release of reg-publish-gh-pages-plugin.
