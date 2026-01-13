@@ -33,8 +33,8 @@ export class GhPagesPreparerPlugin
     const { branch, outDir } = config.options
 
     return Promise.resolve({
-      branch,
-      outDir,
+      ...(branch && { branch }),
+      ...(outDir && { outDir }),
     })
   }
 }
