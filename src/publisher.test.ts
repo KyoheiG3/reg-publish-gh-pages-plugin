@@ -235,6 +235,69 @@ describe('GhPagesPublisherPlugin', () => {
           )
         })
       })
+
+      describe('When reportPath is provided', () => {
+        describe('When reportPath starts with http', () => {
+          it('Then it should use reportPath as-is for reportUrl', async () => {
+            const { plugin } = createInitializedPlugin({
+              branch: 'gh-pages',
+              outDir: 'reports',
+              reportPath: 'https://custom.example.com/vrt',
+            })
+
+            const result = await plugin.publish('abc123')
+
+            expect(result).toEqual({
+              reportUrl: 'https://custom.example.com/vrt/',
+            })
+          })
+
+          it('Then it should preserve trailing slash if present', async () => {
+            const { plugin } = createInitializedPlugin({
+              reportPath: 'https://custom.example.com/vrt/',
+            })
+
+            const result = await plugin.publish('abc123')
+
+            expect(result).toEqual({
+              reportUrl: 'https://custom.example.com/vrt/',
+            })
+          })
+        })
+
+        describe('When reportPath does not start with http', () => {
+          it('Then it should use reportPath instead of targetDir', async () => {
+            const { plugin } = createInitializedPlugin({
+              branch: 'gh-pages',
+              outDir: 'reports',
+              includeCommitHash: true,
+              reportPath: 'custom/path',
+            })
+
+            const result = await plugin.publish('abc123')
+
+            expect(result).toEqual({
+              reportUrl: 'https://test-owner.github.io/test-repo/custom/path/',
+            })
+          })
+        })
+
+        describe('When reportPath is not set', () => {
+          it('Then it should use targetDir for reportUrl', async () => {
+            const { plugin } = createInitializedPlugin({
+              outDir: 'reports',
+              includeCommitHash: true,
+            })
+
+            const result = await plugin.publish('abc123')
+
+            expect(result).toEqual({
+              reportUrl:
+                'https://test-owner.github.io/test-repo/reports/abc123/',
+            })
+          })
+        })
+      })
     })
   })
 
