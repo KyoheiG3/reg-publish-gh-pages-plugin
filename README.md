@@ -1,5 +1,7 @@
 # reg-publish-gh-pages-plugin
 
+**English** | [日本語](./README.ja.md)
+
 A [reg-suit](https://github.com/reg-viz/reg-suit) publisher plugin that deploys visual regression test reports to GitHub Pages.
 
 ## Features
