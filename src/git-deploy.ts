@@ -93,7 +93,13 @@ export function deployToGitHubPages(options: DeployOptions): void {
 
     // Commit and push
     exec(`git commit -m "${commitMessage}"`, worktreeDir)
-    exec(`git push origin ${branch}`, worktreeDir)
+    try {
+      exec(`git push origin ${branch}`, worktreeDir)
+    } catch {
+      // If push fails (e.g., remote has new commits), pull and retry
+      exec(`git pull --rebase origin ${branch}`, worktreeDir)
+      exec(`git push origin ${branch}`, worktreeDir)
+    }
 
     // Move files back to original location
     renameSync(destDir, sourceDir)
