@@ -38,6 +38,7 @@ export function deployToGitHubPages(options: DeployOptions): void {
 
   const worktreeDir = '.gh-pages-worktree'
   const destDir = join(worktreeDir, targetDir)
+  let fileMoved = false
 
   try {
     // Clean up existing worktree if exists
@@ -53,8 +54,8 @@ export function deployToGitHubPages(options: DeployOptions): void {
       // Create orphan branch using worktree
       exec(`git worktree add --detach ${worktreeDir}`)
       exec(`git checkout --orphan ${branch}`, worktreeDir)
-      // Remove git index but keep directory
-      exec('git reset', worktreeDir)
+      // Remove all files from worktree (keep only .git)
+      exec('git rm -rf .', worktreeDir)
     }
 
     // Configure git user (same as actions-gh-pages)
@@ -74,6 +75,7 @@ export function deployToGitHubPages(options: DeployOptions): void {
 
     // Move source to target
     renameSync(sourceDir, destDir)
+    fileMoved = true
 
     // Stage all changes
     exec('git add -A', worktreeDir)
@@ -83,6 +85,7 @@ export function deployToGitHubPages(options: DeployOptions): void {
       exec('git diff --cached --quiet', worktreeDir)
       // No changes, restore files and skip commit
       renameSync(destDir, sourceDir)
+      fileMoved = false
       return
     } catch {
       // Has changes, continue
@@ -94,7 +97,13 @@ export function deployToGitHubPages(options: DeployOptions): void {
 
     // Move files back to original location
     renameSync(destDir, sourceDir)
+    fileMoved = false
   } finally {
+    // Restore files if they were moved but not restored
+    if (fileMoved && existsSync(destDir)) {
+      renameSync(destDir, sourceDir)
+    }
+
     // Cleanup worktree
     if (existsSync(worktreeDir)) {
       exec(`git worktree remove --force ${worktreeDir}`)
