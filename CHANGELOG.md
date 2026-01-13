@@ -1,5 +1,13 @@
 # Changelog
 
+## v0.2.1
+
+### Bug Fixes
+
+- Use `git ls-remote` for remote branch detection instead of `git rev-parse`
+  - Improves reliability in CI environments where local refs may be stale
+  - Gracefully handles network errors by creating orphan branch
+
 ## v0.2.0
 
 ### Features
