@@ -66,7 +66,13 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
       }
     }
 
-    const reportUrl = `https://${info.owner}.github.io/${info.repo}/${targetDir}/`
+    const reportUrl = [
+      `https://${info.owner}.github.io`,
+      info.repo,
+      targetDir,
+    ]
+      .filter(Boolean)
+      .join('/') + '/'
 
     return Promise.resolve({ reportUrl })
   }

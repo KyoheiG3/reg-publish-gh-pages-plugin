@@ -20,6 +20,10 @@ function exec(command: string, cwd?: string): string {
   return execSync(command, { encoding: 'utf-8', cwd }).trim()
 }
 
+function escapeDoubleQuotes(str: string): string {
+  return str.replace(/"/g, '\\"')
+}
+
 function branchExists(branch: string): boolean {
   try {
     exec(`git rev-parse --verify origin/${branch}`)
@@ -59,8 +63,8 @@ export function deployToGitHubPages(options: DeployOptions): void {
     }
 
     // Configure git user (same as actions-gh-pages)
-    exec(`git config user.name "${GIT_USER_NAME}"`, worktreeDir)
-    exec(`git config user.email "${GIT_USER_EMAIL}"`, worktreeDir)
+    exec(`git config user.name "${escapeDoubleQuotes(GIT_USER_NAME)}"`, worktreeDir)
+    exec(`git config user.email "${escapeDoubleQuotes(GIT_USER_EMAIL)}"`, worktreeDir)
 
     // Ensure parent directory exists
     const parentDir = dirname(destDir)
@@ -92,7 +96,7 @@ export function deployToGitHubPages(options: DeployOptions): void {
     }
 
     // Commit and push
-    exec(`git commit -m "${commitMessage}"`, worktreeDir)
+    exec(`git commit -m "${escapeDoubleQuotes(commitMessage)}"`, worktreeDir)
     try {
       exec(`git push origin ${branch}`, worktreeDir)
     } catch {
