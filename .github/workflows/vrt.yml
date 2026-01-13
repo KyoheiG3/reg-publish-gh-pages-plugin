@@ -10,6 +10,8 @@ on:
 jobs:
   vrt:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -28,8 +30,19 @@ jobs:
       - name: Install example dependencies
         run: cd example && pnpm install --frozen-lockfile
 
-      - name: Copy example files
-        run: mkdir -p example/.reg && cp -r example/expected example/.reg
+      - name: Get base hash
+        id: get-base
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          hash=$(gh api repos/${{ github.repository }}/commits/${{ github.base_ref }} --jq '.sha')
+          echo "hash=$hash" >> $GITHUB_OUTPUT
+
+      - name: Restore reg expected
+        uses: actions/cache/restore@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        with:
+          path: example/.reg/
+          key: reg-${{ steps.get-base.outputs.hash }}
 
       # https://github.com/reg-viz/reg-suit#workaround-for-detached-head
       - name: Workaround for detached HEAD
