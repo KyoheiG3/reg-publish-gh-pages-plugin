@@ -7,7 +7,7 @@ import type {
 import { deployToGitHubPages } from './git-deploy'
 import { getRepoInfo } from './git-util'
 
-interface PluginConfig {
+export interface PluginConfig {
   branch?: string
   outDir?: string
   sourceDir?: string
