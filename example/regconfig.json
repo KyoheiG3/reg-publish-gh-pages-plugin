@@ -12,7 +12,8 @@
     "reg-keygen-git-hash-plugin": {},
     "reg-publish-gh-pages-plugin": {
       "branch": "gh-pages",
-      "outDir": "$VRT_OUTPUT_DIR"
+      "outDir": "$VRT_OUTPUT_DIR",
+      "includeCommitHash": true
     },
     "reg-notify-github-plugin": {
       "clientId": "$REG_NOTIFY_CLIENT_ID"
