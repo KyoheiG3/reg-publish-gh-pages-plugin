@@ -47,6 +47,7 @@ yarn add reg-publish-gh-pages-plugin
 | `sourceDir` | `string` | No | `workingDir` | デプロイ元ディレクトリ。デフォルトは reg-suit の作業ディレクトリ。 |
 | `commitMessage` | `string` | No | `"deploy: <key>"` | カスタムコミットメッセージ。デフォルトは比較キーを含む。 |
 | `includeCommitHash` | `boolean` | No | `false` | 出力パスにコミットハッシュを含める（例：`outDir/abc123/`）。 |
+| `reportPath` | `string` | No | - | カスタムレポート URL またはパス。`http` で始まる場合は完全な URL として使用。それ以外は生成される URL のパス部分として使用。 |
 
 ### 設定例
 
@@ -105,6 +106,24 @@ yarn add reg-publish-gh-pages-plugin
 ```
 
 レポート URL: `https://{owner}.github.io/{repo}/pr/123/vrt/`
+
+#### カスタムレポート URL
+
+`reportPath` で生成されるレポート URL を上書きできます。完全な URL またはパスのみでも指定可能です。
+
+```json
+{
+  "plugins": {
+    "reg-publish-gh-pages-plugin": {
+      "branch": "gh-pages",
+      "outDir": "reports",
+      "reportPath": "https://custom-domain.com/vrt"
+    }
+  }
+}
+```
+
+レポート URL: `https://custom-domain.com/vrt/`
 
 #### reportUrl のみ（デプロイなし）
 

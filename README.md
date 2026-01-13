@@ -47,6 +47,7 @@ Add the plugin to your `regconfig.json`:
 | `sourceDir` | `string` | No | `workingDir` | Source directory to deploy. Defaults to reg-suit's working directory. |
 | `commitMessage` | `string` | No | `"deploy: <key>"` | Custom commit message. Default includes the comparison key. |
 | `includeCommitHash` | `boolean` | No | `false` | Include commit hash in the output path (e.g., `outDir/abc123/`). |
+| `reportPath` | `string` | No | - | Custom report URL or path. If starts with `http`, used as full URL. Otherwise, used as path segment in the generated URL. |
 
 ### Configuration Examples
 
@@ -105,6 +106,24 @@ Options support environment variable expansion with `$VAR` syntax. This allows d
 ```
 
 Report URL: `https://{owner}.github.io/{repo}/pr/123/vrt/`
+
+#### Custom report URL
+
+Use `reportPath` to override the generated report URL. Can be a full URL or just a path.
+
+```json
+{
+  "plugins": {
+    "reg-publish-gh-pages-plugin": {
+      "branch": "gh-pages",
+      "outDir": "reports",
+      "reportPath": "https://custom-domain.com/vrt"
+    }
+  }
+}
+```
+
+Report URL: `https://custom-domain.com/vrt/`
 
 #### reportUrl only (no deployment)
 

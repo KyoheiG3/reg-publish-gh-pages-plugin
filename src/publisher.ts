@@ -13,6 +13,7 @@ export interface PluginConfig {
   sourceDir?: string
   commitMessage?: string
   includeCommitHash?: boolean
+  reportPath?: string
 }
 
 export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
@@ -23,6 +24,7 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
   private sourceDir?: string
   private commitMessage?: string
   private includeCommitHash!: boolean
+  private reportPath?: string
 
   init(config: PluginCreateOptions<PluginConfig>) {
     this.logger = config.logger
@@ -32,6 +34,7 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
     this.sourceDir = config.options.sourceDir
     this.commitMessage = config.options.commitMessage
     this.includeCommitHash = config.options.includeCommitHash ?? false
+    this.reportPath = config.options.reportPath
   }
 
   publish(key: string) {
@@ -66,15 +69,7 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
       }
     }
 
-    const reportUrl = [
-      `https://${info.owner}.github.io`,
-      info.repo,
-      targetDir,
-    ]
-      .filter(Boolean)
-      .join('/') + '/'
-
-    return Promise.resolve({ reportUrl })
+    return Promise.resolve({ reportUrl: this.buildReportUrl(info, targetDir) })
   }
 
   fetch() {
@@ -82,5 +77,22 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
       'This plugin is for `reg-suit publish` only. fetch() is not implemented.',
     )
     return Promise.resolve()
+  }
+
+  private buildReportUrl(
+    info: { owner: string; repo: string },
+    targetDir: string,
+  ): string {
+    const url = this.reportPath?.startsWith('http')
+      ? this.reportPath
+      : [
+        `https://${info.owner}.github.io`,
+        info.repo,
+        this.reportPath ?? targetDir,
+      ]
+        .filter(Boolean)
+        .join('/')
+
+    return url.replace(/\/?$/, '/')
   }
 }
