@@ -13,7 +13,7 @@
     "reg-publish-gh-pages-plugin": {
       "branch": "gh-pages",
       "outDir": "pr/vrt",
-      "includeCommitHash": false
+      "includeCommitHash": true
     },
     "reg-notify-github-plugin": {
       "clientId": "$REG_NOTIFY_CLIENT_ID"
