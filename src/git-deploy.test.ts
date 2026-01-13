@@ -20,7 +20,9 @@ const mockMkdirSync = vi.mocked(mkdirSync)
 const mockRenameSync = vi.mocked(renameSync)
 const mockRmSync = vi.mocked(rmSync)
 
-function createDefaultOptions(overrides: Partial<DeployOptions> = {}): DeployOptions {
+function createDefaultOptions(
+  overrides: Partial<DeployOptions> = {},
+): DeployOptions {
   return {
     branch: 'gh-pages',
     sourceDir: 'dist',
@@ -41,7 +43,10 @@ function setupExistsSyncMock(config: ExistsConfig = {}) {
   mockExistsSync.mockImplementation((path) => {
     const pathStr = String(path)
     if (pathStr === '.gh-pages-worktree') return worktree
-    if (pathStr.match(/\.gh-pages-worktree\/[^/]+$/) && !pathStr.includes('reports')) return parentDir
+    if (
+      pathStr.match(/\.gh-pages-worktree\/[^/]+$/)
+      && !pathStr.includes('reports')
+    ) return parentDir
     if (pathStr.includes('reports')) return destDir
     return false
   })
@@ -101,7 +106,7 @@ describe('deployToGitHubPages', () => {
     describe('When deployToGitHubPages is called', () => {
       it('Then it should throw an error', () => {
         expect(() =>
-          deployToGitHubPages(createDefaultOptions({ targetDir: '' })),
+          deployToGitHubPages(createDefaultOptions({ targetDir: '' }))
         ).toThrow('targetDir is required')
       })
     })
@@ -186,11 +191,16 @@ describe('deployToGitHubPages', () => {
 
     describe('When deployToGitHubPages is called', () => {
       it('Then it should create parent directory', () => {
-        deployToGitHubPages(createDefaultOptions({ targetDir: 'nested/reports' }))
+        deployToGitHubPages(
+          createDefaultOptions({ targetDir: 'nested/reports' }),
+        )
 
-        expect(mockMkdirSync).toHaveBeenCalledWith('.gh-pages-worktree/nested', {
-          recursive: true,
-        })
+        expect(mockMkdirSync).toHaveBeenCalledWith(
+          '.gh-pages-worktree/nested',
+          {
+            recursive: true,
+          },
+        )
       })
     })
   })
@@ -208,7 +218,9 @@ describe('deployToGitHubPages', () => {
 
     describe('When deployToGitHubPages is called', () => {
       it('Then it should not create parent directory', () => {
-        deployToGitHubPages(createDefaultOptions({ targetDir: 'nested/reports' }))
+        deployToGitHubPages(
+          createDefaultOptions({ targetDir: 'nested/reports' }),
+        )
 
         expect(mockMkdirSync).not.toHaveBeenCalled()
       })
@@ -267,7 +279,9 @@ describe('deployToGitHubPages', () => {
 
     describe('When deployToGitHubPages is called', () => {
       it('Then it should commit and push', () => {
-        deployToGitHubPages(createDefaultOptions({ commitMessage: 'deploy: abc123' }))
+        deployToGitHubPages(
+          createDefaultOptions({ commitMessage: 'deploy: abc123' }),
+        )
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git commit -m "deploy: abc123"',
@@ -282,7 +296,9 @@ describe('deployToGitHubPages', () => {
 
     describe('When commitMessage contains double quotes', () => {
       it('Then it should escape double quotes', () => {
-        deployToGitHubPages(createDefaultOptions({ commitMessage: 'deploy: "test"' }))
+        deployToGitHubPages(
+          createDefaultOptions({ commitMessage: 'deploy: "test"' }),
+        )
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git commit -m "deploy: \\"test\\""',
@@ -307,7 +323,7 @@ describe('deployToGitHubPages', () => {
           expect.objectContaining({ cwd: '.gh-pages-worktree' }),
         )
         const pushCalls = mockExecSync.mock.calls.filter(([cmd]) =>
-          String(cmd).includes('git push origin gh-pages'),
+          String(cmd).includes('git push origin gh-pages')
         )
         expect(pushCalls).toHaveLength(2)
       })
@@ -336,7 +352,9 @@ describe('deployToGitHubPages', () => {
 
     describe('When deployToGitHubPages is called', () => {
       it('Then it should restore files in finally block', () => {
-        expect(() => deployToGitHubPages(createDefaultOptions())).toThrow('commit failed')
+        expect(() => deployToGitHubPages(createDefaultOptions())).toThrow(
+          'commit failed',
+        )
 
         const restoreCalls = mockRenameSync.mock.calls.filter(
           ([src, dest]) =>
@@ -366,7 +384,7 @@ describe('deployToGitHubPages', () => {
         deployToGitHubPages(createDefaultOptions())
 
         const worktreeRemoveCalls = mockExecSync.mock.calls.filter(([cmd]) =>
-          String(cmd).includes('git worktree remove --force .gh-pages-worktree'),
+          String(cmd).includes('git worktree remove --force .gh-pages-worktree')
         )
         expect(worktreeRemoveCalls.length).toBeGreaterThanOrEqual(1)
       })

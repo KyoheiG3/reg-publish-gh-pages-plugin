@@ -63,8 +63,14 @@ export function deployToGitHubPages(options: DeployOptions): void {
     }
 
     // Configure git user (same as actions-gh-pages)
-    exec(`git config user.name "${escapeDoubleQuotes(GIT_USER_NAME)}"`, worktreeDir)
-    exec(`git config user.email "${escapeDoubleQuotes(GIT_USER_EMAIL)}"`, worktreeDir)
+    exec(
+      `git config user.name "${escapeDoubleQuotes(GIT_USER_NAME)}"`,
+      worktreeDir,
+    )
+    exec(
+      `git config user.email "${escapeDoubleQuotes(GIT_USER_EMAIL)}"`,
+      worktreeDir,
+    )
 
     // Ensure parent directory exists
     const parentDir = dirname(destDir)
