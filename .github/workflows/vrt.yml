@@ -10,6 +10,8 @@ on:
 jobs:
   vrt:
     runs-on: ubuntu-latest
+    permissions:
+      contents: write
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -39,7 +41,7 @@ jobs:
       - name: Restore reg expected
         uses: actions/cache/restore@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
         with:
-          path: example/.reg
+          path: example/.reg/
           key: reg-${{ steps.get-base.outputs.hash }}
 
       # https://github.com/reg-viz/reg-suit#workaround-for-detached-head
