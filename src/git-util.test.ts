@@ -40,7 +40,9 @@ describe('getRepoInfo', () => {
     describe('When GITHUB_REPOSITORY is set with only owner (no slash)', () => {
       it('Then it should fall back to git remote', async () => {
         process.env.GITHUB_REPOSITORY = 'invalid-format'
-        mockExecSync.mockReturnValue('git@github.com:remote-owner/remote-repo.git\n')
+        mockExecSync.mockReturnValue(
+          'git@github.com:remote-owner/remote-repo.git\n',
+        )
 
         const { getRepoInfo } = await import('./git-util.js')
         const result = getRepoInfo()
@@ -52,7 +54,9 @@ describe('getRepoInfo', () => {
     describe('When GITHUB_REPOSITORY is set with empty owner', () => {
       it('Then it should fall back to git remote', async () => {
         process.env.GITHUB_REPOSITORY = '/repo-only'
-        mockExecSync.mockReturnValue('git@github.com:remote-owner/remote-repo.git\n')
+        mockExecSync.mockReturnValue(
+          'git@github.com:remote-owner/remote-repo.git\n',
+        )
 
         const { getRepoInfo } = await import('./git-util.js')
         const result = getRepoInfo()
@@ -64,7 +68,9 @@ describe('getRepoInfo', () => {
     describe('When GITHUB_REPOSITORY is set with empty repo', () => {
       it('Then it should fall back to git remote', async () => {
         process.env.GITHUB_REPOSITORY = 'owner-only/'
-        mockExecSync.mockReturnValue('git@github.com:remote-owner/remote-repo.git\n')
+        mockExecSync.mockReturnValue(
+          'git@github.com:remote-owner/remote-repo.git\n',
+        )
 
         const { getRepoInfo } = await import('./git-util.js')
         const result = getRepoInfo()
@@ -103,7 +109,9 @@ describe('getRepoInfo', () => {
 
     describe('When remote URL is HTTPS format', () => {
       it('Then it should parse owner and repo from HTTPS URL', async () => {
-        mockExecSync.mockReturnValue('https://github.com/https-owner/https-repo.git\n')
+        mockExecSync.mockReturnValue(
+          'https://github.com/https-owner/https-repo.git\n',
+        )
 
         const { getRepoInfo } = await import('./git-util.js')
         const result = getRepoInfo()
@@ -114,7 +122,9 @@ describe('getRepoInfo', () => {
 
     describe('When remote URL is HTTPS format without .git suffix', () => {
       it('Then it should parse owner and repo', async () => {
-        mockExecSync.mockReturnValue('https://github.com/https-owner/https-repo\n')
+        mockExecSync.mockReturnValue(
+          'https://github.com/https-owner/https-repo\n',
+        )
 
         const { getRepoInfo } = await import('./git-util.js')
         const result = getRepoInfo()
