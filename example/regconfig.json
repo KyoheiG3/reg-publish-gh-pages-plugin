@@ -2,14 +2,14 @@
   "core": {
     "workingDir": ".reg",
     "actualDir": "__screenshots__",
-    "addIgnore": true,
     "thresholdRate": 0.001,
+    "addIgnore": true,
     "ximgdiff": {
       "invocationType": "client"
     }
   },
   "plugins": {
-    "reg-keygen-git-hash-plugin": true,
+    "reg-keygen-git-hash-plugin": {},
     "reg-publish-gh-pages-plugin": {
       "branch": "gh-pages",
       "outDir": "pr/vrt",
