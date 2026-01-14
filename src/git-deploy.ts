@@ -35,12 +35,7 @@ function branchExists(branch: string): boolean {
 }
 
 export function deployToGitHubPages(options: DeployOptions): void {
-  const {
-    branch,
-    sourceDir,
-    targetDir,
-    commitMessage,
-  } = options
+  const { branch, sourceDir, targetDir, commitMessage } = options
 
   if (!targetDir) {
     throw new Error('targetDir is required')

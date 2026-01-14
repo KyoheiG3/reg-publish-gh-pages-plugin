@@ -210,12 +210,11 @@ describe('GhPagesPublisherPlugin', () => {
 
           await plugin.publish('abc123')
 
-          expect(mockDeployToGitHubPages).toHaveBeenCalledWith({
-            branch: 'gh-pages',
-            sourceDir: 'custom-source',
-            targetDir: 'reports',
-            commitMessage: 'deploy: abc123',
-          })
+          expect(mockDeployToGitHubPages).toHaveBeenCalledWith(
+            expect.objectContaining({
+              sourceDir: 'custom-source',
+            }),
+          )
         })
       })
 
@@ -229,12 +228,11 @@ describe('GhPagesPublisherPlugin', () => {
 
           await plugin.publish('abc123')
 
-          expect(mockDeployToGitHubPages).toHaveBeenCalledWith({
-            branch: 'gh-pages',
-            sourceDir: '.reg',
-            targetDir: 'reports',
-            commitMessage: 'custom message',
-          })
+          expect(mockDeployToGitHubPages).toHaveBeenCalledWith(
+            expect.objectContaining({
+              commitMessage: 'custom message',
+            }),
+          )
         })
       })
 

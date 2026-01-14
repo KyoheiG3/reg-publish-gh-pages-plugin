@@ -37,14 +37,14 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
     this.reportPath = config.options.reportPath
   }
 
-  async publish(key: string) {
+  publish(key: string) {
     const info = getRepoInfo()
 
     if (!info) {
       this.logger.warn(
         'Unable to determine repository info. Make sure to run this in a GitHub repository or set GITHUB_REPOSITORY environment variable.',
       )
-      return { reportUrl: undefined }
+      return Promise.resolve({ reportUrl: undefined })
     }
 
     const targetDir = [
@@ -56,7 +56,7 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
 
     if (this.branch) {
       if (targetDir) {
-        await deployToGitHubPages({
+        deployToGitHubPages({
           branch: this.branch,
           sourceDir: this.sourceDir ?? this.workingDirs.base,
           targetDir,
@@ -69,7 +69,7 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
       }
     }
 
-    return { reportUrl: this.buildReportUrl(info, targetDir) }
+    return Promise.resolve({ reportUrl: this.buildReportUrl(info, targetDir) })
   }
 
   fetch() {
