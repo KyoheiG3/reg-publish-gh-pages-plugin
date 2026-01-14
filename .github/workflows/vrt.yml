@@ -62,6 +62,9 @@ jobs:
           VRT_OUTPUT_DIR: pr/${{ github.event.pull_request.number }}
           REG_NOTIFY_CLIENT_ID: ${{ secrets.REG_NOTIFY_CLIENT_ID }}
 
+      - name: Fetch gh-pages
+        run: git fetch origin gh-pages
+
       - name: Checkout gh-pages
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
         with:
