@@ -40,10 +40,43 @@ runs:
             },
           )
 
-          if (response.ok) {
-            const data = await response.json()
-            core.setOutput('page_url', data.page_url)
-          } else {
+          if (!response.ok) {
             const error = await response.text()
             core.setFailed(`Deploy failed: ${response.status} ${error}`)
+            return
           }
+
+          const data = await response.json()
+          core.setOutput('page_url', data.page_url)
+
+          const maxAttempts = 30
+          let delay = 100
+          const maxDelay = 10000
+          for (let i = 0; i < maxAttempts; i++) {
+            await new Promise(r => setTimeout(r, delay))
+            delay = Math.min(delay * 2, maxDelay)
+
+            const statusRes = await fetch(data.status_url, {
+              headers: {
+                Accept: 'application/vnd.github+json',
+                Authorization: `Bearer ${process.env.GITHUB_TOKEN}`,
+                'X-GitHub-Api-Version': '2022-11-28',
+              },
+            })
+
+            if (statusRes.ok) {
+              const status = await statusRes.json()
+              core.info(`Deployment status: ${status.status}`)
+
+              if (status.status === 'succeed') {
+                core.info('Deployment completed successfully')
+                return
+              }
+              if (status.status === 'deployment_failed' || status.status === 'deployment_cancelled') {
+                core.setFailed(`Deployment ${status.status}`)
+                return
+              }
+            }
+          }
+
+          core.warning('Deployment status check timed out')
