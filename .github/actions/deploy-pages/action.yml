@@ -27,7 +27,7 @@ runs:
                 'X-GitHub-Api-Version': '2022-11-28',
               },
               body: JSON.stringify({
-                artifact_id: process.env.ARTIFACT_ID,
+                artifact_id: Number(process.env.ARTIFACT_ID),
                 pages_build_version: context.sha,
                 oidc_token: idToken,
               }),
