@@ -50,16 +50,6 @@ jobs:
       - name: Workaround for detached HEAD
         run: git checkout ${{github.head_ref}} && git pull
 
-      # Export runtime variables for @actions/artifact
-      # https://gist.github.com/LJBNZ/35a59ea05d8d3854b8c31f0495727aed
-      - name: Export Actions Runtime Variables
-        uses: actions/github-script@60a0d83039c74a4aee543508d2ffcb1c3799cdea # v7.0.1
-        with:
-          script: |
-            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
-            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
-
       - name: Run reg-suit
         run: cd example && pnpm reg-suit run
         env:
