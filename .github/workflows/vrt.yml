@@ -78,3 +78,9 @@ jobs:
         uses: ./.github/actions/deploy-pages
         with:
           artifact_id: ${{ steps.upload.outputs.artifact_id }}
+
+      - name: Run reg-suit publish
+        run: cd example && pnpm reg-suit publish -n
+        env:
+          VRT_OUTPUT_DIR: pr/${{ github.event.pull_request.number }}
+          REG_NOTIFY_CLIENT_ID: ${{ secrets.REG_NOTIFY_CLIENT_ID }}
