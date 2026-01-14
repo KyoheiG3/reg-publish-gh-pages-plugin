@@ -29,8 +29,7 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
   init(config: PluginCreateOptions<PluginConfig>) {
     this.logger = config.logger
     this.workingDirs = config.workingDirs
-    const branch = config.options.branch
-    this.branch = branch && branch !== 'undefined' ? branch : undefined
+    this.branch = config.options.branch
     this.outDir = config.options.outDir ?? ''
     this.sourceDir = config.options.sourceDir
     this.commitMessage = config.options.commitMessage
