@@ -42,7 +42,6 @@ runs:
 
           if (response.ok) {
             const data = await response.json()
-            core.info(`If the page is not displaying correctly, check the deployment status: ${data.status_url}`)
             core.setOutput('page_url', data.page_url)
           } else {
             const error = await response.text()
