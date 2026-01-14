@@ -11,7 +11,6 @@
   "plugins": {
     "reg-keygen-git-hash-plugin": {},
     "reg-publish-gh-pages-plugin": {
-      "artifactDeploy": true,
       "branch": "gh-pages",
       "outDir": "$VRT_OUTPUT_DIR",
       "includeCommitHash": true

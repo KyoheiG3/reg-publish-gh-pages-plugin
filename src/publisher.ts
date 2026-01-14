@@ -14,7 +14,6 @@ export interface PluginConfig {
   commitMessage?: string
   includeCommitHash?: boolean
   reportPath?: string
-  artifactDeploy?: boolean
 }
 
 export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
@@ -26,7 +25,6 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
   private commitMessage?: string
   private includeCommitHash!: boolean
   private reportPath?: string
-  private artifactDeploy!: boolean
 
   init(config: PluginCreateOptions<PluginConfig>) {
     this.logger = config.logger
@@ -37,7 +35,6 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
     this.commitMessage = config.options.commitMessage
     this.includeCommitHash = config.options.includeCommitHash ?? false
     this.reportPath = config.options.reportPath
-    this.artifactDeploy = config.options.artifactDeploy ?? false
   }
 
   async publish(key: string) {
@@ -64,8 +61,6 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
           sourceDir: this.sourceDir ?? this.workingDirs.base,
           targetDir,
           commitMessage: this.commitMessage ?? `deploy: ${key}`,
-          artifactDeploy: this.artifactDeploy,
-          repoInfo: info,
         })
       } else {
         this.logger.warn(

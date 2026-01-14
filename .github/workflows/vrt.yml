@@ -50,19 +50,23 @@ jobs:
       - name: Workaround for detached HEAD
         run: git checkout ${{github.head_ref}} && git pull
 
-      # Export runtime variables for @actions/artifact
-      # https://gist.github.com/LJBNZ/35a59ea05d8d3854b8c31f0495727aed
-      - name: Export Actions Runtime Variables
-        uses: actions/github-script@ed597411d8f924073f98dfc5c65a23a2325f34cd # v8.0.0
-        with:
-          script: |
-            core.exportVariable('ACTIONS_RESULTS_URL', process.env['ACTIONS_RESULTS_URL'])
-            core.exportVariable('ACTIONS_RUNTIME_URL', process.env['ACTIONS_RUNTIME_URL'])
-            core.exportVariable('ACTIONS_RUNTIME_TOKEN', process.env['ACTIONS_RUNTIME_TOKEN'])
-
       - name: Run reg-suit
         run: cd example && pnpm reg-suit run
         env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           VRT_OUTPUT_DIR: pr/${{ github.event.pull_request.number }}
           REG_NOTIFY_CLIENT_ID: ${{ secrets.REG_NOTIFY_CLIENT_ID }}
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: gh-pages
+          path: gh-pages-dir
+
+      - name: Upload pages artifact
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+        with:
+          path: gh-pages-dir
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@d6db90164ac5ed86f2b6aed7e0febac5b3c0c03e # v4.0.5

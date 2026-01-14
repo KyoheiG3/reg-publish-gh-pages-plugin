@@ -1,13 +1,7 @@
-import { getIDToken } from '@actions/core'
 import { execSync } from 'node:child_process'
 import { existsSync, mkdirSync, renameSync, rmSync } from 'node:fs'
-import * as tar from 'tar'
 import { afterEach, beforeEach, describe, expect, it, vi } from 'vitest'
-import {
-  type DeployOptions,
-  deployToGitHubPages,
-  isGitHubActions,
-} from './git-deploy'
+import { type DeployOptions, deployToGitHubPages } from './git-deploy'
 
 vi.mock('node:child_process', () => ({
   execSync: vi.fn(),
@@ -18,22 +12,6 @@ vi.mock('node:fs', () => ({
   mkdirSync: vi.fn(),
   renameSync: vi.fn(),
   rmSync: vi.fn(),
-  unlinkSync: vi.fn(),
-}))
-
-vi.mock('@actions/core', () => ({
-  getIDToken: vi.fn(),
-}))
-
-const mockUploadArtifact = vi.fn()
-vi.mock('@actions/artifact', () => ({
-  DefaultArtifactClient: class {
-    uploadArtifact = mockUploadArtifact
-  },
-}))
-
-vi.mock('tar', () => ({
-  create: vi.fn(),
 }))
 
 const mockExecSync = vi.mocked(execSync)
@@ -41,8 +19,6 @@ const mockExistsSync = vi.mocked(existsSync)
 const mockMkdirSync = vi.mocked(mkdirSync)
 const mockRenameSync = vi.mocked(renameSync)
 const mockRmSync = vi.mocked(rmSync)
-const mockGetIDToken = vi.mocked(getIDToken)
-const mockTarCreate = vi.mocked(tar.create)
 
 function createDefaultOptions(
   overrides: Partial<DeployOptions> = {},
@@ -538,208 +514,4 @@ describe('deployToGitHubPages', () => {
     })
   })
 
-  describe('isGitHubActions', () => {
-    const originalGithubActions = process.env.GITHUB_ACTIONS
-
-    afterEach(() => {
-      if (originalGithubActions !== undefined) {
-        process.env.GITHUB_ACTIONS = originalGithubActions
-      } else {
-        delete process.env.GITHUB_ACTIONS
-      }
-    })
-
-    describe('When GITHUB_ACTIONS is set to "true"', () => {
-      it('Then it should return true', () => {
-        process.env.GITHUB_ACTIONS = 'true'
-        expect(isGitHubActions()).toBe(true)
-      })
-    })
-
-    describe('When GITHUB_ACTIONS is not set', () => {
-      it('Then it should return false', () => {
-        delete process.env.GITHUB_ACTIONS
-        expect(isGitHubActions()).toBe(false)
-      })
-    })
-  })
-
-  describe('Given artifactDeploy is enabled', () => {
-    describe('When not running in GitHub Actions', () => {
-      beforeEach(() => {
-        delete process.env.GITHUB_ACTIONS
-      })
-
-      it('Then it should throw an error', async () => {
-        await expect(
-          deployToGitHubPages(
-            createDefaultOptions({
-              artifactDeploy: true,
-              repoInfo: { owner: 'test-owner', repo: 'test-repo' },
-            }),
-          ),
-        ).rejects.toThrow('artifactDeploy is only available in GitHub Actions')
-      })
-    })
-
-    describe('When repoInfo is missing', () => {
-      beforeEach(() => {
-        process.env.GITHUB_ACTIONS = 'true'
-      })
-
-      afterEach(() => {
-        delete process.env.GITHUB_ACTIONS
-      })
-
-      it('Then it should throw an error', async () => {
-        await expect(
-          deployToGitHubPages(
-            createDefaultOptions({
-              artifactDeploy: true,
-            }),
-          ),
-        ).rejects.toThrow('repoInfo is required for artifactDeploy')
-      })
-    })
-
-    describe('When all requirements are met', () => {
-      const originalGithubActions = process.env.GITHUB_ACTIONS
-      const originalGithubToken = process.env.GITHUB_TOKEN
-      const originalGithubSha = process.env.GITHUB_SHA
-      const originalRunnerTemp = process.env.RUNNER_TEMP
-
-      beforeEach(() => {
-        process.env.GITHUB_ACTIONS = 'true'
-        process.env.GITHUB_TOKEN = 'test-token'
-        process.env.GITHUB_SHA = 'abc123'
-        process.env.RUNNER_TEMP = '/tmp'
-        setupExistsSyncMock()
-        setupExecSyncMock()
-        mockTarCreate.mockResolvedValue(undefined)
-        mockGetIDToken.mockResolvedValue('oidc-token')
-        mockUploadArtifact.mockResolvedValue({ id: 12345 })
-        global.fetch = vi.fn().mockResolvedValue({
-          ok: true,
-          json: () => Promise.resolve({}),
-        })
-      })
-
-      afterEach(() => {
-        if (originalGithubActions !== undefined) {
-          process.env.GITHUB_ACTIONS = originalGithubActions
-        } else {
-          delete process.env.GITHUB_ACTIONS
-        }
-        if (originalGithubToken !== undefined) {
-          process.env.GITHUB_TOKEN = originalGithubToken
-        } else {
-          delete process.env.GITHUB_TOKEN
-        }
-        if (originalGithubSha !== undefined) {
-          process.env.GITHUB_SHA = originalGithubSha
-        } else {
-          delete process.env.GITHUB_SHA
-        }
-        if (originalRunnerTemp !== undefined) {
-          process.env.RUNNER_TEMP = originalRunnerTemp
-        } else {
-          delete process.env.RUNNER_TEMP
-        }
-        vi.restoreAllMocks()
-      })
-
-      it('Then it should create tar, upload artifact, and deploy to pages', async () => {
-        await deployToGitHubPages(
-          createDefaultOptions({
-            artifactDeploy: true,
-            repoInfo: { owner: 'test-owner', repo: 'test-repo' },
-          }),
-        )
-
-        expect(mockTarCreate).toHaveBeenCalledWith(
-          expect.objectContaining({
-            file: '/tmp/artifact.tar',
-            cwd: '.gh-pages-worktree',
-          }),
-          ['.'],
-        )
-        expect(global.fetch).toHaveBeenCalledWith(
-          'https://api.github.com/repos/test-owner/test-repo/pages/deployments',
-          expect.objectContaining({
-            method: 'POST',
-            headers: expect.objectContaining({
-              Authorization: 'Bearer test-token',
-            }),
-          }),
-        )
-      })
-
-      it('Then it should throw error when artifact upload fails', async () => {
-        mockUploadArtifact.mockResolvedValue({ id: undefined })
-
-        await expect(
-          deployToGitHubPages(
-            createDefaultOptions({
-              artifactDeploy: true,
-              repoInfo: { owner: 'test-owner', repo: 'test-repo' },
-            }),
-          ),
-        ).rejects.toThrow('Failed to upload artifact')
-      })
-
-      it('Then it should throw error when pages deployment fails', async () => {
-        global.fetch = vi.fn().mockResolvedValue({
-          ok: false,
-          text: () => Promise.resolve('Deployment failed'),
-        })
-
-        await expect(
-          deployToGitHubPages(
-            createDefaultOptions({
-              artifactDeploy: true,
-              repoInfo: { owner: 'test-owner', repo: 'test-repo' },
-            }),
-          ),
-        ).rejects.toThrow('Failed to create Pages deployment: Deployment failed')
-      })
-
-      it('Then it should filter out .git directory from tar', async () => {
-        await deployToGitHubPages(
-          createDefaultOptions({
-            artifactDeploy: true,
-            repoInfo: { owner: 'test-owner', repo: 'test-repo' },
-          }),
-        )
-
-        const tarCreateCall = mockTarCreate.mock.calls[0]!
-        const options = tarCreateCall[0] as { filter: (path: string) => boolean }
-        expect(options.filter('.git')).toBe(false)
-        expect(options.filter('.git/')).toBe(false)
-        expect(options.filter('.git/config')).toBe(false)
-        expect(options.filter('index.html')).toBe(true)
-        expect(options.filter('reports/index.html')).toBe(true)
-      })
-
-      it('Then it should cleanup tar file in finally block', async () => {
-        const mockUnlinkSync = vi.mocked(
-          await import('node:fs').then((m) => m.unlinkSync),
-        )
-        mockExistsSync.mockImplementation((path) => {
-          const pathStr = String(path)
-          if (pathStr === '/tmp/artifact.tar') return true
-          if (pathStr === '.gh-pages-worktree') return false
-          return false
-        })
-
-        await deployToGitHubPages(
-          createDefaultOptions({
-            artifactDeploy: true,
-            repoInfo: { owner: 'test-owner', repo: 'test-repo' },
-          }),
-        )
-
-        expect(mockUnlinkSync).toHaveBeenCalledWith('/tmp/artifact.tar')
-      })
-    })
-  })
 })
