@@ -70,6 +70,7 @@ jobs:
         with:
           ref: gh-pages
           path: gh-pages-dir
+          fetch-depth: 0
 
       - name: Upload pages artifact
         id: upload
