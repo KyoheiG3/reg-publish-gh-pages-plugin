@@ -69,7 +69,10 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
       }
     }
 
-    return Promise.resolve({ reportUrl: this.buildReportUrl(info, targetDir) })
+    const reportUrl = this.buildReportUrl(info, targetDir)
+    this.logger.info(`Report URL: ${reportUrl}`)
+
+    return Promise.resolve({ reportUrl })
   }
 
   fetch() {
