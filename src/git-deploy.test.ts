@@ -103,10 +103,10 @@ describe('deployToGitHubPages', () => {
 
   describe('Given targetDir is empty', () => {
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should throw an error', async () => {
-        await expect(
-          deployToGitHubPages(createDefaultOptions({ targetDir: '' })),
-        ).rejects.toThrow('targetDir is required')
+      it('Then it should throw an error', () => {
+        expect(() =>
+          deployToGitHubPages(createDefaultOptions({ targetDir: '' }))
+        ).toThrow('targetDir is required')
       })
     })
   })
@@ -118,8 +118,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should remove existing worktree before proceeding', async () => {
-        await deployToGitHubPages(createDefaultOptions())
+      it('Then it should remove existing worktree before proceeding', () => {
+        deployToGitHubPages(createDefaultOptions())
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git worktree remove --force .gh-pages-worktree',
@@ -136,8 +136,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should add worktree for existing branch', async () => {
-        await deployToGitHubPages(createDefaultOptions())
+      it('Then it should add worktree for existing branch', () => {
+        deployToGitHubPages(createDefaultOptions())
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git fetch origin gh-pages',
@@ -171,8 +171,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should treat as branch not existing and create orphan branch', async () => {
-        await deployToGitHubPages(createDefaultOptions())
+      it('Then it should treat as branch not existing and create orphan branch', () => {
+        deployToGitHubPages(createDefaultOptions())
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git worktree add --detach .gh-pages-worktree',
@@ -193,8 +193,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should create orphan branch', async () => {
-        await deployToGitHubPages(createDefaultOptions())
+      it('Then it should create orphan branch', () => {
+        deployToGitHubPages(createDefaultOptions())
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git worktree add --detach .gh-pages-worktree',
@@ -224,8 +224,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should create parent directory', async () => {
-        await deployToGitHubPages(
+      it('Then it should create parent directory', () => {
+        deployToGitHubPages(
           createDefaultOptions({ targetDir: 'nested/reports' }),
         )
 
@@ -251,8 +251,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should not create parent directory', async () => {
-        await deployToGitHubPages(
+      it('Then it should not create parent directory', () => {
+        deployToGitHubPages(
           createDefaultOptions({ targetDir: 'nested/reports' }),
         )
 
@@ -268,8 +268,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should remove existing target directory', async () => {
-        await deployToGitHubPages(createDefaultOptions())
+      it('Then it should remove existing target directory', () => {
+        deployToGitHubPages(createDefaultOptions())
 
         expect(mockRmSync).toHaveBeenCalledWith('.gh-pages-worktree/reports', {
           recursive: true,
@@ -286,8 +286,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should restore files and skip commit', async () => {
-        await deployToGitHubPages(createDefaultOptions())
+      it('Then it should restore files and skip commit', () => {
+        deployToGitHubPages(createDefaultOptions())
 
         expect(mockRenameSync).toHaveBeenCalledWith(
           'dist',
@@ -312,8 +312,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should commit and push', async () => {
-        await deployToGitHubPages(
+      it('Then it should commit and push', () => {
+        deployToGitHubPages(
           createDefaultOptions({ commitMessage: 'deploy: abc123' }),
         )
 
@@ -329,8 +329,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When commitMessage contains double quotes', () => {
-      it('Then it should escape double quotes', async () => {
-        await deployToGitHubPages(
+      it('Then it should escape double quotes', () => {
+        deployToGitHubPages(
           createDefaultOptions({ commitMessage: 'deploy: "test"' }),
         )
 
@@ -349,8 +349,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should pull --rebase and retry push', async () => {
-        await deployToGitHubPages(createDefaultOptions())
+      it('Then it should pull --rebase and retry push', () => {
+        deployToGitHubPages(createDefaultOptions())
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git pull --rebase origin gh-pages',
@@ -385,10 +385,10 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages is called', () => {
-      it('Then it should restore files in finally block', async () => {
-        await expect(
-          deployToGitHubPages(createDefaultOptions()),
-        ).rejects.toThrow('commit failed')
+      it('Then it should restore files in finally block', () => {
+        expect(() => deployToGitHubPages(createDefaultOptions())).toThrow(
+          'commit failed',
+        )
 
         const restoreCalls = mockRenameSync.mock.calls.filter(
           ([src, dest]) =>
@@ -414,8 +414,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages completes', () => {
-      it('Then it should cleanup worktree in finally block', async () => {
-        await deployToGitHubPages(createDefaultOptions())
+      it('Then it should cleanup worktree in finally block', () => {
+        deployToGitHubPages(createDefaultOptions())
 
         const worktreeRemoveCalls = mockExecSync.mock.calls.filter(([cmd]) =>
           String(cmd).includes('git worktree remove --force .gh-pages-worktree')
@@ -446,10 +446,8 @@ describe('deployToGitHubPages', () => {
     })
 
     describe('When deployToGitHubPages fails', () => {
-      it('Then it should restore files from destDir to sourceDir', async () => {
-        await expect(
-          deployToGitHubPages(createDefaultOptions()),
-        ).rejects.toThrow()
+      it('Then it should restore files from destDir to sourceDir', () => {
+        expect(() => deployToGitHubPages(createDefaultOptions())).toThrow()
 
         const restoreCalls = mockRenameSync.mock.calls.filter(
           ([src, dest]) =>
@@ -479,7 +477,7 @@ describe('deployToGitHubPages', () => {
         setupExecSyncMock()
 
         const { deployToGitHubPages: deploy } = await import('./git-deploy.js')
-        await deploy(createDefaultOptions())
+        deploy(createDefaultOptions())
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git config user.name "test-user"',
@@ -500,7 +498,7 @@ describe('deployToGitHubPages', () => {
         setupExecSyncMock()
 
         const { deployToGitHubPages: deploy } = await import('./git-deploy.js')
-        await deploy(createDefaultOptions())
+        deploy(createDefaultOptions())
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git config user.name "github-actions[bot]"',
@@ -513,5 +511,4 @@ describe('deployToGitHubPages', () => {
       })
     })
   })
-
 })

@@ -34,7 +34,7 @@ function branchExists(branch: string): boolean {
   }
 }
 
-export async function deployToGitHubPages(options: DeployOptions): Promise<void> {
+export function deployToGitHubPages(options: DeployOptions): void {
   const {
     branch,
     sourceDir,
