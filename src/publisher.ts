@@ -14,6 +14,7 @@ export interface PluginConfig {
   commitMessage?: string
   includeCommitHash?: boolean
   reportPath?: string
+  artifactDeploy?: boolean
 }
 
 export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
@@ -25,6 +26,7 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
   private commitMessage?: string
   private includeCommitHash!: boolean
   private reportPath?: string
+  private artifactDeploy!: boolean
 
   init(config: PluginCreateOptions<PluginConfig>) {
     this.logger = config.logger
@@ -35,16 +37,17 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
     this.commitMessage = config.options.commitMessage
     this.includeCommitHash = config.options.includeCommitHash ?? false
     this.reportPath = config.options.reportPath
+    this.artifactDeploy = config.options.artifactDeploy ?? false
   }
 
-  publish(key: string) {
+  async publish(key: string) {
     const info = getRepoInfo()
 
     if (!info) {
       this.logger.warn(
         'Unable to determine repository info. Make sure to run this in a GitHub repository or set GITHUB_REPOSITORY environment variable.',
       )
-      return Promise.resolve({ reportUrl: undefined })
+      return { reportUrl: undefined }
     }
 
     const targetDir = [
@@ -56,11 +59,13 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
 
     if (this.branch) {
       if (targetDir) {
-        deployToGitHubPages({
+        await deployToGitHubPages({
           branch: this.branch,
           sourceDir: this.sourceDir ?? this.workingDirs.base,
           targetDir,
           commitMessage: this.commitMessage ?? `deploy: ${key}`,
+          artifactDeploy: this.artifactDeploy,
+          repoInfo: info,
         })
       } else {
         this.logger.warn(
@@ -69,7 +74,7 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
       }
     }
 
-    return Promise.resolve({ reportUrl: this.buildReportUrl(info, targetDir) })
+    return { reportUrl: this.buildReportUrl(info, targetDir) }
   }
 
   fetch() {

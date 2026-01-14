@@ -150,6 +150,8 @@ describe('GhPagesPublisherPlugin', () => {
             sourceDir: '.reg',
             targetDir: 'reports',
             commitMessage: 'deploy: abc123',
+            artifactDeploy: false,
+            repoInfo: { owner: 'test-owner', repo: 'test-repo' },
           })
           expect(result).toEqual({
             reportUrl: 'https://test-owner.github.io/test-repo/reports/',
@@ -171,6 +173,8 @@ describe('GhPagesPublisherPlugin', () => {
             sourceDir: '.reg',
             targetDir: 'abc123',
             commitMessage: 'deploy: abc123',
+            artifactDeploy: false,
+            repoInfo: { owner: 'test-owner', repo: 'test-repo' },
           })
           expect(result).toEqual({
             reportUrl: 'https://test-owner.github.io/test-repo/abc123/',
@@ -193,6 +197,8 @@ describe('GhPagesPublisherPlugin', () => {
             sourceDir: '.reg',
             targetDir: 'reports/abc123',
             commitMessage: 'deploy: abc123',
+            artifactDeploy: false,
+            repoInfo: { owner: 'test-owner', repo: 'test-repo' },
           })
           expect(result).toEqual({
             reportUrl: 'https://test-owner.github.io/test-repo/reports/abc123/',
@@ -210,11 +216,14 @@ describe('GhPagesPublisherPlugin', () => {
 
           await plugin.publish('abc123')
 
-          expect(mockDeployToGitHubPages).toHaveBeenCalledWith(
-            expect.objectContaining({
-              sourceDir: 'custom-source',
-            }),
-          )
+          expect(mockDeployToGitHubPages).toHaveBeenCalledWith({
+            branch: 'gh-pages',
+            sourceDir: 'custom-source',
+            targetDir: 'reports',
+            commitMessage: 'deploy: abc123',
+            artifactDeploy: false,
+            repoInfo: { owner: 'test-owner', repo: 'test-repo' },
+          })
         })
       })
 
@@ -228,11 +237,14 @@ describe('GhPagesPublisherPlugin', () => {
 
           await plugin.publish('abc123')
 
-          expect(mockDeployToGitHubPages).toHaveBeenCalledWith(
-            expect.objectContaining({
-              commitMessage: 'custom message',
-            }),
-          )
+          expect(mockDeployToGitHubPages).toHaveBeenCalledWith({
+            branch: 'gh-pages',
+            sourceDir: '.reg',
+            targetDir: 'reports',
+            commitMessage: 'custom message',
+            artifactDeploy: false,
+            repoInfo: { owner: 'test-owner', repo: 'test-repo' },
+          })
         })
       })
 
