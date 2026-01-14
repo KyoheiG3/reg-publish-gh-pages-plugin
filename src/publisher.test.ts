@@ -116,6 +116,38 @@ describe('GhPagesPublisherPlugin', () => {
         })
       })
 
+      describe('When branch is "undefined" string', () => {
+        it('Then it should treat as unset and not deploy', async () => {
+          const { plugin } = createInitializedPlugin({
+            branch: 'undefined',
+            outDir: 'reports',
+          })
+
+          const result = await plugin.publish('abc123')
+
+          expect(result).toEqual({
+            reportUrl: 'https://test-owner.github.io/test-repo/reports/',
+          })
+          expect(mockDeployToGitHubPages).not.toHaveBeenCalled()
+        })
+      })
+
+      describe('When branch is empty string', () => {
+        it('Then it should treat as unset and not deploy', async () => {
+          const { plugin } = createInitializedPlugin({
+            branch: '',
+            outDir: 'reports',
+          })
+
+          const result = await plugin.publish('abc123')
+
+          expect(result).toEqual({
+            reportUrl: 'https://test-owner.github.io/test-repo/reports/',
+          })
+          expect(mockDeployToGitHubPages).not.toHaveBeenCalled()
+        })
+      })
+
       describe('When branch is set but targetDir is empty', () => {
         describe('When outDir is empty and includeCommitHash is false', () => {
           it('Then it should warn and skip deployment', async () => {
