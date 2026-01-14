@@ -42,6 +42,7 @@ runs:
 
           if (response.ok) {
             const data = await response.json()
+            core.info(`status_url: ${data.status_url}`)
             core.setOutput('page_url', data.page_url)
           } else {
             const error = await response.text()
