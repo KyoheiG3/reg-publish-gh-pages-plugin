@@ -12,6 +12,8 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: write
+      id-token: write
+      pages: write
     steps:
       - name: Checkout
         uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
@@ -53,3 +55,20 @@ jobs:
         env:
           VRT_OUTPUT_DIR: pr/${{ github.event.pull_request.number }}
           REG_NOTIFY_CLIENT_ID: ${{ secrets.REG_NOTIFY_CLIENT_ID }}
+
+      - name: Checkout gh-pages
+        uses: actions/checkout@8e8c483db84b4bee98b60c0593521ed34d9990e8 # v6.0.1
+        with:
+          ref: gh-pages
+          path: gh-pages-dir
+
+      - name: Upload pages artifact
+        id: upload
+        uses: actions/upload-pages-artifact@7b1f4a764d45c48632c6b24a0339c27f5614fb0b # v4.0.0
+        with:
+          path: gh-pages-dir
+
+      - name: Deploy to GitHub Pages
+        uses: ./.github/actions/deploy-pages
+        with:
+          artifact_id: ${{ steps.upload.outputs.artifact_id }}

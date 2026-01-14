@@ -62,6 +62,9 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
           targetDir,
           commitMessage: this.commitMessage ?? `deploy: ${key}`,
         })
+        this.logger.info(
+          `Deployed to GitHub Pages: branch=${this.branch}, targetDir=${targetDir}`,
+        )
       } else {
         this.logger.warn(
           'Deployment skipped. Set outDir option or enable includeCommitHash.',
@@ -69,7 +72,10 @@ export class GhPagesPublisherPlugin implements PublisherPlugin<PluginConfig> {
       }
     }
 
-    return Promise.resolve({ reportUrl: this.buildReportUrl(info, targetDir) })
+    const reportUrl = this.buildReportUrl(info, targetDir)
+    this.logger.info(`Report URL: ${reportUrl}`)
+
+    return Promise.resolve({ reportUrl })
   }
 
   fetch() {
