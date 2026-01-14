@@ -11,7 +11,7 @@
   "plugins": {
     "reg-keygen-git-hash-plugin": {},
     "reg-publish-gh-pages-plugin": {
-      "branch": "gh-pages",
+      "branch": "$BRANCH_NAME",
       "outDir": "$VRT_OUTPUT_DIR",
       "includeCommitHash": true
     },

@@ -53,12 +53,12 @@ jobs:
       - name: Run reg-suit compare
         run: cd example && pnpm reg-suit compare
         env:
-          VRT_OUTPUT_DIR: pr/${{ github.event.pull_request.number }}
           REG_NOTIFY_CLIENT_ID: ${{ secrets.REG_NOTIFY_CLIENT_ID }}
 
       - name: Run reg-suit publish
         run: cd example && pnpm reg-suit publish
         env:
+          BRANCH_NAME: gh-pages
           VRT_OUTPUT_DIR: pr/${{ github.event.pull_request.number }}
           REG_NOTIFY_CLIENT_ID: ${{ secrets.REG_NOTIFY_CLIENT_ID }}
 
