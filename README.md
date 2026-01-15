@@ -173,6 +173,50 @@ jobs:
 
 - `contents: write` - Required for pushing to the gh-pages branch
 
+### GitHub Pages Deployment Source
+
+GitHub Pages has two deployment source options in repository settings:
+
+#### Deploy from a branch (default)
+
+When "Build and deployment" Source is set to "Deploy from a branch", deployment happens asynchronously after pushing to the gh-pages branch. No additional configuration is needed.
+
+#### GitHub Actions
+
+When "Build and deployment" Source is set to "GitHub Actions", you need to add the following permissions and steps after `reg-suit run`:
+
+**Additional permissions required:**
+```yaml
+permissions:
+  contents: write
+  id-token: write
+  pages: write
+```
+
+**Steps to add after `reg-suit run`:**
+```yaml
+      # Replace 'gh-pages' with your configured branch name
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages-dir
+
+      - name: Upload pages artifact
+        id: upload
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: gh-pages-dir
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+**Benefits of GitHub Actions deployment:**
+- Faster deployment compared to branch-based deployment
+- Deployment completion is visible in the CI workflow
+
 ## How It Works
 
 1. **Repository Detection** - Detects owner/repo from `GITHUB_REPOSITORY` environment variable or git remote URL

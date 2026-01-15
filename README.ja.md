@@ -173,6 +173,50 @@ jobs:
 
 - `contents: write` - gh-pages ブランチへのプッシュに必要
 
+### GitHub Pages デプロイソース
+
+GitHub Pages にはリポジトリ設定で2つのデプロイソースオプションがあります：
+
+#### Deploy from a branch（デフォルト）
+
+「Build and deployment」の Source を「Deploy from a branch」に設定している場合、gh-pages ブランチへのプッシュ後に非同期でデプロイされます。追加の設定は不要です。
+
+#### GitHub Actions
+
+「Build and deployment」の Source を「GitHub Actions」に設定している場合、以下の権限と `reg-suit run` の後に追加のステップが必要です：
+
+**追加で必要な権限：**
+```yaml
+permissions:
+  contents: write
+  id-token: write
+  pages: write
+```
+
+**`reg-suit run` の後に追加するステップ：**
+```yaml
+      # 'gh-pages' は実際の設定に合わせたブランチ名に置き換えてください
+      - name: Checkout gh-pages
+        uses: actions/checkout@v4
+        with:
+          ref: gh-pages
+          path: gh-pages-dir
+
+      - name: Upload pages artifact
+        id: upload
+        uses: actions/upload-pages-artifact@v4
+        with:
+          path: gh-pages-dir
+
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
+```
+
+**GitHub Actions デプロイの利点：**
+- ブランチベースのデプロイより実行時間が短い
+- デプロイの完了が CI ワークフローで確認できる
+
 ## 動作の仕組み
 
 1. **リポジトリ検出** - `GITHUB_REPOSITORY` 環境変数または git remote URL から owner/repo を取得
