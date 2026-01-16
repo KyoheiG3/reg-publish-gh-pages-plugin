@@ -1,6 +1,6 @@
+import { dirname, join } from 'node:path'
 import { chromium } from 'playwright'
 import { createServer } from 'vite'
-import { dirname, join } from 'node:path'
 
 const __dirname = dirname(new URL(import.meta.url).pathname)
 
