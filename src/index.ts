@@ -1,6 +1,6 @@
 import type { PublisherPluginFactory } from 'reg-suit-interface'
-import { GhPagesPublisherPlugin } from './publisher.js'
 import { GhPagesPreparerPlugin } from './preparer.js'
+import { GhPagesPublisherPlugin } from './publisher.js'
 
 const factory: PublisherPluginFactory = () => {
   return {

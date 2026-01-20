@@ -123,6 +123,14 @@ export function deployToGitHubPages(options: DeployOptions): void {
       renameSync(destDir, sourceDir)
     }
 
+    // Remove git config settings (worktree shares config with main repo)
+    try {
+      exec('git config --unset user.name')
+      exec('git config --unset user.email')
+    } catch {
+      // Ignore if already unset
+    }
+
     // Cleanup worktree
     if (existsSync(worktreeDir)) {
       exec(`git worktree remove --force ${worktreeDir}`)
