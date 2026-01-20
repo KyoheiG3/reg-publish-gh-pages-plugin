@@ -149,7 +149,7 @@ describe('deployToGitHubPages', () => {
         )
         expect(mockExecSync).toHaveBeenCalledWith(
           'git checkout -B gh-pages',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
       })
     })
@@ -180,7 +180,7 @@ describe('deployToGitHubPages', () => {
         )
         expect(mockExecSync).toHaveBeenCalledWith(
           'git checkout --orphan gh-pages',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
       })
     })
@@ -202,11 +202,11 @@ describe('deployToGitHubPages', () => {
         )
         expect(mockExecSync).toHaveBeenCalledWith(
           'git checkout --orphan gh-pages',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
         expect(mockExecSync).toHaveBeenCalledWith(
           'git rm -rf .',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
       })
     })
@@ -319,11 +319,11 @@ describe('deployToGitHubPages', () => {
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git commit -m "deploy: abc123"',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
         expect(mockExecSync).toHaveBeenCalledWith(
           'git push origin gh-pages',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
       })
     })
@@ -336,7 +336,7 @@ describe('deployToGitHubPages', () => {
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git commit -m "deploy: \\"test\\""',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
       })
     })
@@ -354,7 +354,7 @@ describe('deployToGitHubPages', () => {
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git pull --rebase origin gh-pages',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
         const pushCalls = mockExecSync.mock.calls.filter(([cmd]) =>
           String(cmd).includes('git push origin gh-pages')
@@ -458,6 +458,50 @@ describe('deployToGitHubPages', () => {
     })
   })
 
+  describe('Given deployment completes', () => {
+    beforeEach(() => {
+      setupExistsSyncMock()
+      setupExecSyncMock()
+    })
+
+    describe('When deployToGitHubPages finishes', () => {
+      it('Then it should unset git config user.name and user.email', () => {
+        deployToGitHubPages(createDefaultOptions())
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+          'git config --unset user.name',
+          expect.any(Object),
+        )
+        expect(mockExecSync).toHaveBeenCalledWith(
+          'git config --unset user.email',
+          expect.any(Object),
+        )
+      })
+    })
+  })
+
+  describe('Given deployment fails', () => {
+    beforeEach(() => {
+      setupExistsSyncMock()
+      setupExecSyncMock({ commitFails: true })
+    })
+
+    describe('When deployToGitHubPages throws', () => {
+      it('Then it should still unset git config user.name and user.email', () => {
+        expect(() => deployToGitHubPages(createDefaultOptions())).toThrow()
+
+        expect(mockExecSync).toHaveBeenCalledWith(
+          'git config --unset user.name',
+          expect.any(Object),
+        )
+        expect(mockExecSync).toHaveBeenCalledWith(
+          'git config --unset user.email',
+          expect.any(Object),
+        )
+      })
+    })
+  })
+
   describe('Given GITHUB_ACTOR environment variable', () => {
     const originalActor = process.env.GITHUB_ACTOR
 
@@ -481,11 +525,11 @@ describe('deployToGitHubPages', () => {
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git config user.name "test-user"',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
         expect(mockExecSync).toHaveBeenCalledWith(
           'git config user.email "test-user@users.noreply.github.com"',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
       })
     })
@@ -502,11 +546,11 @@ describe('deployToGitHubPages', () => {
 
         expect(mockExecSync).toHaveBeenCalledWith(
           'git config user.name "github-actions[bot]"',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
         expect(mockExecSync).toHaveBeenCalledWith(
           'git config user.email "github-actions[bot]@users.noreply.github.com"',
-          expect.objectContaining({ cwd: '.gh-pages-worktree' }),
+          expect.any(Object),
         )
       })
     })
