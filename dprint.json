@@ -1,6 +1,7 @@
 {
   "lineWidth": 80,
   "indentWidth": 2,
+  "newLineKind": "lf",
   "typescript": {
     "quoteStyle": "alwaysSingle",
     "semiColons": "asi",
@@ -10,7 +11,7 @@
   },
   "json": {
   },
-  "includes": ["**/*.{js,ts}"],
+  "includes": ["**/*.{js,ts}", "**/*.json"],
   "excludes": [
     "**/node_modules",
     "**/*-lock.yaml"
