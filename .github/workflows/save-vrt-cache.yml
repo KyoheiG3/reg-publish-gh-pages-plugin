@@ -20,7 +20,7 @@ jobs:
         run: echo "hash=$(git rev-parse HEAD)" >> $GITHUB_OUTPUT
 
       - name: Save snapshots cache
-        uses: actions/cache/save@9255dc7a253b0ccc959486e2bca901246202afeb # v5.0.1
+        uses: actions/cache/save@8b402f58fbc84540c8b491a91e594a4576fec3d7 # v5.0.2
         with:
           path: example/.reg/
           key: reg-${{ steps.get-hash.outputs.hash }}
