@@ -1,5 +1,20 @@
 # Changelog
 
+## v0.2.2
+
+### Bug Fixes
+
+- Unset git config (user.name, user.email) after deployment to prevent persisting in main repository
+
+### Documentation
+
+- Add GitHub Pages deployment source documentation (English and Japanese)
+- Document "Deploy from a branch" and "GitHub Actions" deployment options
+
+### Infrastructure
+
+- Add `eslint-plugin-simple-import-sort` for consistent import ordering
+
 ## v0.2.1
 
 ### Bug Fixes
