@@ -1,8 +1,9 @@
 {
   "editor.defaultFormatter": "dprint.dprint",
   "editor.tabSize": 2,
+  "files.insertFinalNewline": true,
   "explorer.fileNesting.enabled": true,
   "explorer.fileNesting.patterns": {
-    "*.ts": "$(capture).*.ts",
-  },
+    "*.ts": "$(capture).*.ts"
+  }
 }
