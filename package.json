@@ -39,7 +39,7 @@
     "@types/node": "^25.0.5",
     "@vitest/coverage-v8": "^4.0.17",
     "dprint": "^0.51.1",
-    "eslint": "^9.39.2",
+    "eslint": "^10.0.0",
     "eslint-plugin-simple-import-sort": "^12.1.1",
     "reg-suit-interface": "^0.14.2",
     "typescript": "^5.9.3",
